@@ -151,7 +151,7 @@ class EnergySensor(StatisticHelper):
         now = start
         _sum = init_value
         while now < end:
-            _sum = round(_sum + single_value, 2)
+            _sum = round(_sum + single_value, 5)
             statistics.append(
                 StatisticData(
                     start=now,
@@ -193,7 +193,7 @@ class EnergySensor(StatisticHelper):
             _LOGGER.debug("No stats found. Exiting.")
             return
         day_data = stats[_day_dt]
-        _value = round(day_data[self._attr_read_key] / 24, 2)
+        _value = round(day_data[self._attr_read_key] / 24, 5)
         last_stats = await self.get_stats_from_ha_db(
             start_time=start - timedelta(hours=1), end_time=now
         )
@@ -215,7 +215,8 @@ class EnergySensor(StatisticHelper):
             _date = start_of_day.replace(
                 year=day_dt.year, month=day_dt.month, day=day_dt.day
             )
-            _value = round(stat[self._attr_read_key] / 24, 2)
+            """Converting gas usage from kWh to m3"""
+            _value = round(round(stat[self._attr_read_key] / 24, 5) / 11.5, 5)
             sum, statistics = self._generate_easycontrol_statistics(
                 start=_date,
                 end=_date + timedelta(days=1),
